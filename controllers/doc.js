@@ -3,6 +3,7 @@ import md5 from 'md5';
 import Note from '../models/note.js'
 import Register from '../models/registration.js'
 import doc from '../models/doc.js';
+import mealModel from "../models/mealModel.js";
 
 
 export const register=async(req,res)=>{
@@ -380,5 +381,75 @@ export const getDoctorProfile = async (req, res) => {
   }
 };
 
+
+
+export const forgotPassword = async (req, res) => {
+  let email = req.body.email;
+
+  if (!email) {
+    return res.status(400).json({
+      success: false,
+      message: 'Email is required'
+    });
+  }
+
+  email = email.trim().toLowerCase();
+
+  try {
+const user = await Doctor.findOne({ email });
+
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        message: 'No user found with this email'
+      });
+    }
+
+    const newPassword = `pass${Math.floor(1000 + Math.random() * 9000)}`;
+    const hashedPassword = md5(newPassword);
+
+    user.password = hashedPassword;
+    user.rePassword = hashedPassword;
+    await user.save();
+
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: '201900219@pua.edu.eg',            
+        pass: 'ecuyxldmqgrrvfcs'                
+      }
+    });
+
+    const mailOptions = {
+      from: '201900219@pua.edu.eg',             
+      to: email,                                
+      subject: 'GlucoCare Password Reset',
+      text: `Hello,
+
+You requested a password reset for your GlucoCare account.
+
+🔐 Your new temporary password is: ${newPassword}
+
+Please use this password to log in, and make sure to change it immediately after login from the profile settings for better security.
+
+Thank you,
+GlucoCare Team`
+    };
+
+    await transporter.sendMail(mailOptions);
+
+    return res.status(200).json({
+      success: true,
+      message: 'New password sent to your email'
+    });
+
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    return res.status(500).json({
+      success: false,
+      message: 'Server error. Please try again.'
+    });
+  }
+};
 
 

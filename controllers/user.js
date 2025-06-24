@@ -5,17 +5,9 @@ import nodemailer from 'nodemailer';
 import fastingBlood from '../models/fastingBlood.js';
 import cumulativeBlood from '../models/cumulativeBlood.js';
 import md5 from 'md5';
+import Meal from "../models/meal.js";
 
-export const setMeal =async(req,res)=>{
-  const{user,mealName,type}=req.body
-  try {
-    const savedMeal= await Meal.create({user,mealName,type})
-    res.status(200).json({success:true,message:"meal saved successfully"})
-  } catch (error) {
-    console.log(error)
-    res.status(400).json({success:false,message:"error in saving meal"})
-  }
-}
+
 
 export const signup = async (req, res) => {
   const {
@@ -834,3 +826,4 @@ GlucoCare Team`
     });
   }
 };
+

@@ -768,10 +768,10 @@ export const forgotPassword = async (req, res) => {
     });
   }
 
-  email = email.trim().toLowerCase();
+  email = email.trim();
 
   try {
-    const user = await User.findOne({ email });
+const user = await User.findOne({ email: { $regex: new RegExp(`^${email}$`, 'i') } });
 
     if (!user) {
       return res.status(404).json({

@@ -61,6 +61,7 @@ export const signIn = async (req, res) => {
     console.error('Signin Error:', error);
     res.status(500).json({ message: 'Server error. Please try again.' });
   }
+
 };
 
 
@@ -107,23 +108,26 @@ export const getAllUsers = async (req, res) => {
   try {
     const users = await User.find();
     const usersWithStatus = users.map(user => {
-      const createdAt = new Date(user.createdAt);
+      const lastSeen = new Date(user.updatedAt);
       const now = new Date();
-      const diffInDays = Math.floor((now - createdAt) / (1000 * 60 * 60 * 24));
+      const diffInDays = Math.floor((now - lastSeen) / (1000 * 60 * 60 * 24));
 
       const status = diffInDays > 7 ? 'Inactive' : 'Active'; 
 
       return {
-        ...user._doc, 
+        ...user._doc,
         status,
+        lastSeen, 
       };
     });
 
-    res.json(usersWithStatus);
+    res.status(200).json({ success: true, data: usersWithStatus });
   } catch (error) {
-    res.status(500).json({ message: 'Server Error', error });
+    console.error("Get users error:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
+
 
 
 
@@ -229,16 +233,18 @@ export const createDoctor = async (req, res) => {
 export const getAllDoctors = async (req, res) => {
   try {
     const doctors = await Doctor.find();
+    
     const doctorsWithStatus = doctors.map(doctor => {
-      const createdAt = new Date(doctor.createdAt);
+      const lastSeen = new Date(doctor.updatedAt); 
       const now = new Date();
-      const diffInDays = Math.floor((now - createdAt) / (1000 * 60 * 60 * 24));
+      const diffInDays = Math.floor((now - lastSeen) / (1000 * 60 * 60 * 24));
 
       const status = diffInDays > 7 ? 'Inactive' : 'Active';
 
       return {
         ...doctor._doc,
         status,
+        lastSeen, 
       };
     });
 
@@ -250,7 +256,6 @@ export const getAllDoctors = async (req, res) => {
 
 
 
-// تعديل دكتور
 export const updateDoctor = async (req, res) => {
   try {
     const { id } = req.params;
@@ -267,7 +272,6 @@ export const updateDoctor = async (req, res) => {
   }
 };
 
-// حذف دكتور
 export const deleteDoctor = async (req, res) => {
   try {
     const { id } = req.params;

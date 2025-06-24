@@ -3,7 +3,6 @@ import md5 from 'md5';
 import Note from '../models/note.js'
 import Register from '../models/registration.js'
 import doc from '../models/doc.js';
-import mealModel from "../models/mealModel.js";
 
 
 export const register=async(req,res)=>{

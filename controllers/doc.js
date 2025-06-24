@@ -3,6 +3,7 @@ import md5 from 'md5';
 import Note from '../models/note.js'
 import Register from '../models/registration.js'
 import doc from '../models/doc.js';
+import nodemailer from 'nodemailer';
 
 
 export const register=async(req,res)=>{
@@ -382,7 +383,7 @@ export const getDoctorProfile = async (req, res) => {
 
 
 
-export const forgotPassword = async (req, res) => {
+export const forgotDoctorPassword = async (req, res) => {
   let email = req.body.email;
 
   if (!email) {
@@ -392,38 +393,38 @@ export const forgotPassword = async (req, res) => {
     });
   }
 
-  email = email.trim().toLowerCase();
+  email = email.trim();
 
   try {
-const user = await Doctor.findOne({ email });
+    const doctor = await Doctor.findOne({ email: { $regex: new RegExp(`^${email}$`, 'i') } });
 
-    if (!user) {
+    if (!doctor) {
       return res.status(404).json({
         success: false,
-        message: 'No user found with this email'
+        message: 'No doctor found with this email'
       });
     }
 
-    const newPassword = `pass${Math.floor(1000 + Math.random() * 9000)}`;
+    const newPassword = `doc${Math.floor(1000 + Math.random() * 9000)}`;
     const hashedPassword = md5(newPassword);
 
-    user.password = hashedPassword;
-    user.rePassword = hashedPassword;
-    await user.save();
+    doctor.password = hashedPassword;
+    doctor.rePassword = hashedPassword;
+    await doctor.save();
 
     const transporter = nodemailer.createTransport({
       service: 'gmail',
       auth: {
-        user: '201900219@pua.edu.eg',            
-        pass: 'ecuyxldmqgrrvfcs'                
+        user: '201900219@pua.edu.eg',
+        pass: 'ecuyxldmqgrrvfcs'
       }
     });
 
     const mailOptions = {
-      from: '201900219@pua.edu.eg',             
-      to: email,                                
-      subject: 'GlucoCare Password Reset',
-      text: `Hello,
+      from: '201900219@pua.edu.eg',
+      to: email,
+      subject: 'GlucoCare Doctor Password Reset',
+      text: `Hello Doctor,
 
 You requested a password reset for your GlucoCare account.
 
@@ -443,12 +444,15 @@ GlucoCare Team`
     });
 
   } catch (error) {
-    console.error('Forgot password error:', error);
+    console.error('Doctor password reset error:', error);
     return res.status(500).json({
       success: false,
       message: 'Server error. Please try again.'
     });
   }
 };
+
+
+
 
 

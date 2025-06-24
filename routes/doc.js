@@ -9,7 +9,7 @@ import {
     changeDoctorPassword,
     getDoctorProfile, 
     updateDoctorProfileData,
-    forgotPassword
+    forgotDoctorPassword
  } from '../controllers/doc.js'
 
 const router = express.Router()
@@ -17,7 +17,7 @@ const router = express.Router()
 router.post('/signup', signup)
 // router.post('/med', addMid)
 router.post('/signin', signin)
-router.post('/forgotPassword', forgotPassword);
+router.post('/forgotDoctorPassword', forgotDoctorPassword);
 
 // إرسال رسالة
 router.post('/send', sendMessage);

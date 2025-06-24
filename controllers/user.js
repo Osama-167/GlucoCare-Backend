@@ -1,7 +1,6 @@
 import User from '../models/users.js';
 import Med from '../models/med.js';
 import Note from '../models/note.js'
-import Meal from '../models/meal.js'
 import nodemailer from 'nodemailer';
 import fastingBlood from '../models/fastingBlood.js';
 import cumulativeBlood from '../models/cumulativeBlood.js';

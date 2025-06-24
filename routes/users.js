@@ -18,7 +18,6 @@ import {
   getPatients,
   sendMessage,
   getMessages,
-  setMeal,
   updateProfileData,
   forgotPassword
 } from '../controllers/user.js'
@@ -57,7 +56,6 @@ router.post('/send', sendMessage);
 // عرض الرسائل
 router.get('/messages', getMessages);
 
-router.post('/setMeal',setMeal)
 
 
 export default router
